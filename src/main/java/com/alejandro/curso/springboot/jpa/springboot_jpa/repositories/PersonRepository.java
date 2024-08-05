@@ -14,7 +14,7 @@ public interface PersonRepository extends CrudRepository<Person, Long> {
     List<Person> findByLastName(String lastName);
 
     /*Podemos hacer una consulta personalizada. Ejemplo */
-    @Query("select p from Persons p where p.programmingLanguage = 1? and p.lastName = 2?")
+    @Query("select p from Persons p where p.programmingLanguage = ?1 and p.lastName = ?2")
     List<Person> encontrarPorLenguajeDeProgramacion(String programmingLanguage, String lastName);
 
 }
