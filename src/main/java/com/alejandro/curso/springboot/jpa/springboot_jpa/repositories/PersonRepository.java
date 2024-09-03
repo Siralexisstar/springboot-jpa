@@ -2,11 +2,24 @@ package com.alejandro.curso.springboot.jpa.springboot_jpa.repositories;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import com.alejandro.curso.springboot.jpa.springboot_jpa.entities.Person;
 import java.util.List;
+import java.util.Optional;
 
 public interface PersonRepository extends CrudRepository<Person, Long> {
+
+    Optional<Person> findById(Long id);
+
+    @Query("SELECT p FROM Person p WHERE p.name = :name")
+    Optional<Person> findOneName(@Param("name") String name);
+
+    @Query("select p from Person p where p.name like %?1%")
+    Optional<List<Person>> findOneLikeName(String name);
+
+    //Lo mismo que la de arriba pero con otra nomentacion
+    Optional<List<Person>> findByNameContaining(String name);
 
     // Vamos a poner los metodos que necesitamos
     List<Person> findByProgrammingLanguage(String programmingLanguage);
@@ -31,14 +44,14 @@ public interface PersonRepository extends CrudRepository<Person, Long> {
     @Query("select p.name, p.programmingLanguage from Person p where p.programmingLanguage = ?1 and p.name = ?2")
     List<Object[]> obtenerDatosDeLaPersona(String programmingLanguage, String name);
 
-    /** 
+    /**
      * Podemos hacer otro metodo sobrecargado
      */
     @Query("select p.name, p.programmingLanguage from Person p where p.name=?1")
     List<Object[]> obtenerDatosDeLaPersona(String name);
-    
+
     /**
-     * Otro tipo de query mas 
+     * Otro tipo de query mas
      */
     @Query("select p.programmingLanguage from Person p where p.programmingLanguage = ?1")
     List<Object[]> obtenerPersonDataByProgrammingLanguage(String programmingLanguage);
