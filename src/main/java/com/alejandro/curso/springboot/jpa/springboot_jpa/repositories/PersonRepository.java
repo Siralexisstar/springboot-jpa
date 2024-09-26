@@ -11,25 +11,51 @@ import java.util.Optional;
 
 public interface PersonRepository extends CrudRepository<Person, Long> {
 
-    //Tambien podemos hacer un count
+
+    //buscar entre id utilizando JPA , se podria hacer con cualquier campo
+    List<Person> findByIdBetween(Long id1, Long id2);
+
+    // Nuevo metodo between
+    @Query("select p from Person p where p.id between 1 and 3")
+    List<Person> findAllBetweenId();
+
+    @Query("select p from Person p where p.name between ?1 and ?2")
+    List<Person> findAllBetweenName(String name1, String name2);
+
+    // con upper podemos convertir a mayuscula
+    @Query("select upper(p.name) from Person p")
+    List<String> findAllUpperName();
+
+    // Buscamos todos los nombres y apellidos concatenados
+    @Query("select concat(p.name, ' ', p.lastName) from Person p") // Concatenamos el nombre y el apellido
+    List<String> findAllFullNameConcat();
+
+    // Nombres y apellidos concatenados pero con doble pipe
+    @Query("select p.name || ' ' || p.lastName from Person p")
+    List<String> findAllFullNameConcatPipe();
+
+    // Tambien podemos hacer un count
     @Query("select count(p) from Person p")
     long count();
 
     @Query("select distinct(p.programmingLanguage) from Person p")
     List<String> findAllDistinctProgrammingLanguages();
 
-    //Lista todos los nombres
+    // Lista todos los nombres
     @Query("select p.name from Person p")
     List<String> findAllNames();
 
-    //Lista todos los nombres pero con palabra reservada distinct
-    @Query("select distinct(p.name) form Person p")
+    // Lista todos los nombres pero con palabra reservada distinct
+    @Query("select distinct(p.name) from Person p")
     List<String> findAllDistinctNames();
 
-    @Query("select p from com.alejandro.curso.springboot.jpa.springboot_jpa.dto.PersonDto p") /**Es importante que el constructor exista sino mierda */
+    @Query("select new com.alejandro.curso.springboot.jpa.springboot_jpa.dto.PersonDto(p.name, p.lastName) from Person p")
     List<PersonDto> findAllObjectPersonDto();
 
-    @Query("select new Person(p.name, p.last1Name) from Person p") /**Es importante que el constructor exista sino mierda */
+    @Query("select new Person(p.name, p.lastName) from Person p") /**
+                                                                   * Es importante que el constructor exista sino
+                                                                   * mierda
+                                                                   */
     List<Person> findAllObjectPersonPersonalizedPerson();
 
     Optional<Person> findById(Long id);
@@ -41,17 +67,18 @@ public interface PersonRepository extends CrudRepository<Person, Long> {
     @Query("select p.id from Person p where p.id = ?1")
     Long getIdById(Long id);
 
-    @Query("select concat(p.name, ' ', p.lastName) from Person p where p.id = ?1")  // Concatenamos el nombre y el apellido
+    @Query("select concat(p.name, ' ', p.lastName) from Person p where p.id = ?1") // Concatenamos el nombre y el
+                                                                                   // apellido
     String getFullNameById(Long id);
 
     @Query("select p, p.programmingLanguage, p.name from Person p")
-    List<Object[]> findAllMixPersonList(); 
+    List<Object[]> findAllMixPersonList();
 
     @Query("select p.id, p.name, p.lastName from Person p")
-    List<Object[]> obtenerPersonaDataFullList(Long id); 
+    List<Object[]> obtenerPersonaDataFullList(Long id);
 
     @Query("select p.id, p.name, p.lastName from Person p where p.id= ?1")
-    Object[] obtenerPersonaDataFullById(Long id); 
+    Object[] obtenerPersonaDataFullById(Long id);
 
     @Query("SELECT p FROM Person p WHERE p.name = :name")
     Optional<Person> findOneName(@Param("name") String name);
@@ -59,7 +86,7 @@ public interface PersonRepository extends CrudRepository<Person, Long> {
     @Query("select p from Person p where p.name like %?1%")
     Optional<List<Person>> findOneLikeName(String name);
 
-    //Lo mismo que la de arriba pero con otra nomentacion
+    // Lo mismo que la de arriba pero con otra nomentacion
     Optional<List<Person>> findByNameContaining(String name);
 
     // Vamos a poner los metodos que necesitamos

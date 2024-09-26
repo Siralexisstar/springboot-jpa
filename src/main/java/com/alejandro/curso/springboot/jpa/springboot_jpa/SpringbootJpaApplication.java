@@ -34,7 +34,38 @@ public class SpringbootJpaApplication implements CommandLineRunner {
 		// findOne();
 		// personalizedQueries();
 		// personalizedQueries2();
-		personalizedQueriesDistinct();
+		// personalizedQueriesDistinct();
+		// personalizedQueriesConcatUpperAndLowerCase();
+		personalizedQueriesWithBetween();
+
+	}
+
+	@Transactional(readOnly = true)
+	public void personalizedQueriesWithBetween() {
+
+		System.out.println("consulta para recuperar los id en un rango");
+		List<Person> persons = personRepository.findAllBetweenId();
+		persons.stream().forEach(System.out::println);
+
+		System.out.println("Otra manera de hacer esto seria la siguiente");
+		List<Person> persons2 = personRepository.findAllBetweenName("Ana", "Paco");
+		persons2.stream().forEach(System.out::println);
+
+		System.out.println("Utilizando consultas JPA seria");
+		List<Person> persons3 = personRepository.findByIdBetween(1L, 3L);
+		persons3.stream().forEach(System.out::println);
+	}
+
+	@Transactional(readOnly = true)
+	public void personalizedQueriesConcatUpperAndLowerCase() {
+
+		System.out.println(" ======= consulta de nombres con los apellidos concatenados ========");
+		List<String> names = personRepository.findAllFullNameConcat();
+		names.forEach(System.out::println);
+
+		System.out.println("Otra manera seria:");
+		List<String> names2 = personRepository.findAllFullNameConcatPipe();
+		names2.forEach(System.out::println);
 
 	}
 
@@ -56,7 +87,7 @@ public class SpringbootJpaApplication implements CommandLineRunner {
 		System.out.println("=========== Retorna la cuenta de todos los regiuros ===========");
 		Long count = personRepository.count();
 		System.out.println(count);
-		
+
 	}
 
 	/**
