@@ -1,5 +1,6 @@
 package com.alejandro.curso.springboot.jpa.springboot_jpa;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -36,8 +37,75 @@ public class SpringbootJpaApplication implements CommandLineRunner {
 		// personalizedQueries2();
 		// personalizedQueriesDistinct();
 		// personalizedQueriesConcatUpperAndLowerCase();
-		personalizedQueriesWithBetween();
+		// personalizedQueriesWithBetween();
+		// queriesFunctionAggregation();
+		subqueries();
 
+	}
+
+	@Transactional
+	public void subqueries() {
+
+		System.out.println("===== consulta por el nombre mas corto y su largo ========");
+
+		List<Object[]> shorterName = personRepository.getShorterName();
+		shorterName.stream().forEach(sN -> {
+			System.out.println("Nombre: " + sN[0]);
+			System.out.println("Largo: " + sN[1]);
+		});
+
+		System.out.println("===== consulta por el ultimo registro que se inserto ========");
+		Optional<Person> lastRegistration = personRepository.getLastRegistration();
+		lastRegistration.ifPresentOrElse(System.out::println, () -> System.out.println("No existen registros"));
+
+		System.out.println("===== consulta de los registros en una lista ========");
+		List<Person> personsByIds = personRepository.getPersonsByIds();
+		personsByIds.stream().forEach(System.out::println);
+
+		System.out.println("===== consulta de los registros en una lista pero pasandolos por parametros ========");
+		personRepository.getPersonsByIds(Arrays.asList(1L, 2L, 3L))
+				.stream()
+				.forEach(System.out::println);
+
+	}
+
+	@Transactional(readOnly = true)
+	public void queriesFunctionAggregation() {
+
+		System.out.println("===== consulta con el nombre mas corto de la tabla persona =====");
+		Integer minName = personRepository.getMinLengthName();
+		System.out.println(minName);
+
+		System.out.println("===== consulta con el nombre mas largo de la tabla persona =====");
+		Integer maxName = personRepository.getMaxLengthName();
+		System.out.println(maxName);
+
+		System.out.println("===== consulta con el total de registros de la tabla persona =====");
+		Long count = personRepository.countTotalPerson();
+		System.out.println(count);
+
+		System.out.println("===== consulta con el valor minimo del id de la tabla persona =====");
+		Long min = personRepository.minId();
+		System.out.println(min);
+
+		System.out.println("===== consulta con el valor maximo del id de la tabla persona =====");
+		Long max = personRepository.maxId();
+		System.out.println(max);
+
+		System.out.println(" consulta con el nombre y su largo ");
+		List<Object[]> nameLength = personRepository.getPersonNameLength();
+		nameLength.stream().forEach(nL -> {
+			System.out.println("Nombre " + nL[0]);
+			System.out.println("Largo " + nL[1]);
+		});
+
+		System.out.println("===== consultas resumen de funciones de agregacion min, max, sum, avg, count =====");
+		Object[] resumeObjects = (Object[]) personRepository.getResumeAggregationFunction();
+		System.out.println("min: " + resumeObjects[0]);
+		System.out.println("max: " + resumeObjects[1]);
+		System.out.println("count: " + resumeObjects[2]);
+		System.out.println("avg: " + resumeObjects[3]);
+		System.out.println("sum: " + resumeObjects[4]);
 	}
 
 	@Transactional(readOnly = true)
@@ -54,6 +122,19 @@ public class SpringbootJpaApplication implements CommandLineRunner {
 		System.out.println("Utilizando consultas JPA seria");
 		List<Person> persons3 = personRepository.findByIdBetween(1L, 3L);
 		persons3.stream().forEach(System.out::println);
+
+		System.out.println("Vamos a utilizar las otras consultas JPA");
+		List<Person> persons4 = personRepository.findByIdBetweenOrderByIdAsc(1L, 3L);
+		persons4.stream().forEach(System.out::println);
+
+		System.out.println("Vamos a ordenar los registros por id descendente entre 1 y 3");
+		List<Person> persons5 = personRepository.findByIdBetweenOrderByIdDesc(1L, 3L);
+		persons5.stream().forEach(System.out::println);
+
+		System.out.println("Vamos a buscar entre dos nombres y ordenar por nombre descendente");
+		List<Person> personsAll = personRepository.getAllOrderedList();
+		personsAll.stream().forEach(System.out::println);
+
 	}
 
 	@Transactional(readOnly = true)

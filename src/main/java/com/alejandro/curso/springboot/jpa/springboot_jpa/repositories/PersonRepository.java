@@ -11,15 +11,71 @@ import java.util.Optional;
 
 public interface PersonRepository extends CrudRepository<Person, Long> {
 
+    // Consulta como la de abajo pero con parametros y de forma dinamica
+    @Query("select p from Person p where p.id in :ids")
+    public List<Person> getPersonsByIds(@Param("ids") List<Long> ids);
 
-    //buscar entre id utilizando JPA , se podria hacer con cualquier campo
+    // Vamos a devolver un list de personas by id que coincidan en un rango
+    @Query("select p from Person p where p.id in(1, 2, 3)")
+    public List<Person> getPersonsByIds();
+
+    // Consultamos el id de la persona que coincida con el id mas grande
+    @Query("select p from Person p where p.id=(select max(p.id) from Person p)")
+    public Optional<Person> getLastRegistration();
+
+    // vamos a ver como anidar subconsultas dentro de la consulta principal
+    @Query("select p.name, length(p.name) from Person p where length(p.name) = (select min(length(p.name)) from Person p)")
+    public List<Object[]> getShorterName();
+
+    @Query("select min(p.id), max(p.id), count(p.id), avg(length(p.name)), sum(p.id) from Person p where p.name is not null and p.id is not null")
+    public Object getResumeAggregationFunction();
+
+    // Vamos a calcular el nombre mas corto
+    @Query("select min(length(p.name)) from Person p")
+    public Integer getMinLengthName();
+
+    // Vamos a calcular el nombre mas largo
+    @Query("select max(length(p.name)) from Person p")
+    public Integer getMaxLengthName();
+
+    @Query("select p.name, length(p.name) from Person p")
+    public List<Object[]> getPersonNameLength();
+
+    // Consultamos el id maximo
+    @Query("select max(p.id) from Person p")
+    Long maxId();
+
+    // Consultamos el id minimo
+    @Query("select min(p.id) from Person p")
+    Long minId();
+
+    // Contamos los registros
+    @Query("select count(p) from Person p")
+    Long countTotalPerson();
+
+    // Consulta usando JPA
+    List<Person> findAllByOrderByNameAscLastNameDesc();
+
+    // Buscamos todos los registros y los ordenamos por nombre asc y por apellido
+    // desc
+    @Query("select p from Person p order by p.name asc, p.lastName desc")
+    List<Person> getAllOrderedList();
+
+    // buscar entre id utilizando JPA , se podria hacer con cualquier campo
     List<Person> findByIdBetween(Long id1, Long id2);
+
+    // buscar entre id utilizando JPA y ordenar ascendente
+    List<Person> findByIdBetweenOrderByIdAsc(Long id1, Long id2);
+
+    // Buscar entre id utilizando JPA y ordenar descendente
+    List<Person> findByIdBetweenOrderByIdDesc(Long id1, Long id2);
 
     // Nuevo metodo between
     @Query("select p from Person p where p.id between 1 and 3")
     List<Person> findAllBetweenId();
 
-    @Query("select p from Person p where p.name between ?1 and ?2")
+    // Buscamos entre dos nombres y ordenamos por nombre
+    @Query("select p from Person p where p.name between ?1 and ?2 order by p.name")
     List<Person> findAllBetweenName(String name1, String name2);
 
     // con upper podemos convertir a mayuscula
