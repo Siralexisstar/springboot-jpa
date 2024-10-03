@@ -1,6 +1,10 @@
 package com.alejandro.curso.springboot.jpa.springboot_jpa.entities;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +20,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Person {
+
+    @Embedded
+    private Audit audit = new Audit();
 
     // Vamos a definir los atributos de la tabla
     @Id
@@ -37,6 +44,8 @@ public class Person {
                 ", name='" + name + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", programmingLanguage='" + programmingLanguage + '\'' +
+                ", createAt=" + audit.getCreateAt() + //lo podemos añadir gracias a importar el Audit embebido
+                ", updatedAt=" + audit.getUpdatedAt() + //lo podemos añadir gracias a importar el Audit embebido
                 '}';
     }
 
@@ -45,4 +54,5 @@ public class Person {
         this.name = name;
         this.lastName = lastName;
     }
+
 }

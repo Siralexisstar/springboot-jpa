@@ -29,7 +29,7 @@ public class SpringbootJpaApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		// create();
-		// update();
+		update();
 		// delete2();
 		// list();
 		// findOne();
@@ -39,11 +39,11 @@ public class SpringbootJpaApplication implements CommandLineRunner {
 		// personalizedQueriesConcatUpperAndLowerCase();
 		// personalizedQueriesWithBetween();
 		// queriesFunctionAggregation();
-		subqueries();
+		// subqueries();
 
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public void subqueries() {
 
 		System.out.println("===== consulta por el nombre mas corto y su largo ========");
@@ -315,13 +315,13 @@ public class SpringbootJpaApplication implements CommandLineRunner {
 		});
 
 		/** Otra forma de acerlo pero con COnsumer */
-		personRepository.findById(id).ifPresent(p -> {
+		// personRepository.findById(id).ifPresent(p -> {
 
-			p.setName(name);
-			p.setLastName(lastName);
-			p.setProgrammingLanguage(programmingLanguage);
-			personRepository.save(p);
-		});
+		// 	p.setName(name);
+		// 	p.setLastName(lastName);
+		// 	p.setProgrammingLanguage(programmingLanguage);
+		// 	personRepository.save(p);
+		// });
 
 		sc.close();
 
